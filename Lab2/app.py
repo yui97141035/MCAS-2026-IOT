@@ -19,13 +19,17 @@ def index():
 @app.route("/next")
 def next_img():
     global current_index
-    current_index += 1
+    # 修正 bug：原本沒有邊界檢查，index 超出 images 範圍時
+    # images[current_index] 會丟出 IndexError，導致網站顯示 500 錯誤。
+    # 改用取餘數(modulo)讓索引在 0 ~ len(images)-1 之間循環，
+    # 點到最後一張後再按「下一張」會自然繞回第一張。
+    current_index = (current_index + 1) % len(images)
     return redirect(url_for("index"))
 
 @app.route("/prev")
 def prev_img():
     global current_index
-    current_index -= 1
+    current_index = (current_index - 1) % len(images)
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
